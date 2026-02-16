@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCAN YA MWILI MZIMA | DR. WILLIAM V8 PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --fire-orange: #ff4e00;
+            --deep-dark: #050a0f;
+            --blood-red: #d32f2f;
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0c0f url('https://i.imgur.com/VLwvLmt.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .overlay { position: fixed; inset: 0; background: rgba(5, 10, 15, 0.82); z-index: 1; }
+        .content-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+
+        /* Modern UI Cards */
+        .card {
+            background: rgba(15, 20, 25, 0.9);
+            backdrop-filter: blur(20px);
+            width: 100%; max-width: 650px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(255, 78, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+            margin-top: 20px;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        .banner-header {
+            width: 100%; height: 160px;
+            background: url('https://i.imgur.com/7GqI1l6.jpg') center/cover;
+            border-bottom: 4px solid var(--fire-orange);
+        }
+
+        .marquee-container {
+            background: #000; color: #ffae00; padding: 12px;
+            font-family: 'Courier New', monospace; font-size: 13px;
+            border-bottom: 1px solid var(--fire-orange);
+        }
+
+        /* Input Styles */
+        .input-group { position: relative; margin: 15px 0; width: 100%; }
+        .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--fire-orange); }
+        input, select {
+            width: 100%; padding: 16px 16px 16px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px; color: #fff; font-size: 16px; transition: 0.3s;
+        }
+        input:focus { border-color: var(--fire-orange); box-shadow: 0 0 15px rgba(255, 78, 0, 0.4); outline: none; }
+
+        /* Scanner Styles */
+        #camera-zone {
+            display: none; position: relative; width: 100%; 
+            border: 3px solid var(--fire-orange); border-radius: 15px; overflow: hidden;
+        }
+        video { width: 100%; filter: contrast(1.5) saturate(2) hue-rotate(320deg); }
+        .laser-line {
+            position: absolute; width: 100%; height: 4px; background: var(--fire-orange);
+            box-shadow: 0 0 20px var(--fire-orange); z-index: 100;
+            animation: sweep 2.5s infinite linear;
+        }
+        @keyframes sweep { 0% { top: 0; } 100% { top: 100%; } }
+
+        .btn-fire {
+            background: linear-gradient(45deg, #ff4e00, #ec9f05);
+            color: white; border: none; padding: 20px;
+            border-radius: 50px; font-weight: bold; cursor: pointer;
+            width: 100%; font-size: 18px; text-transform: uppercase;
+            box-shadow: 0 5px 25px rgba(255, 78, 0, 0.5); transition: 0.3s;
+        }
+        .btn-fire:hover { transform: scale(1.02); box-shadow: 0 0 40px var(--fire-orange); }
+
+        /* Report Paper Style */
+        #report-paper {
+            display: none; background: #fff; color: #000;
+            width: 210mm; padding: 20mm; margin: 20px auto;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); position: relative;
+        }
+        .report-header { text-align: center; border-bottom: 5px double #000; padding-bottom: 15px; margin-bottom: 25px; }
+        .diagnosis-box { background: #f9f9f9; border-left: 8px solid var(--fire-orange); padding: 20px; margin: 20px 0; }
+        .alert-box { background: #fff0f0; border: 2px solid var(--blood-red); padding: 20px; border-radius: 10px; margin-top: 30px; }
+
+        @media print {
+            body { background: none; }
+            .overlay, .content-wrapper, .btn-fire { display: none !important; }
+            #report-paper { display: block !important; margin: 0; width: 100%; box-shadow: none; }
+        }
+
+        #lock-screen {
+            display: none; position: fixed; inset: 0; background: #900;
+            z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div id="lock-screen">
+    <i class="fas fa-user-shield" style="font-size: 80px; margin-bottom: 20px;"></i>
+    <h1>USAIDIZI UMEFUNGWA</h1>
+    <p style="max-width: 500px; padding: 20px; font-size: 18px;">
+        Kifaa chako kimeshatumika kufanya Scan leo. Ili kulinda seli zako dhidi ya mionzi (Radiation Overload), mfumo umezima uwezo wa kurudia scan kwa saa 24.
+    </p>
+</div>
+
+<div class="content-wrapper">
+    <div class="card" id="main-ui">
+        <div class="banner-header"></div>
+        <div class="marquee-container">
+            <marquee scrollamount="6">⚠️ RADIATION ALERT: Mfumo unatumia Bio-Magnetic Thermography. Tafadhali hakikisha unakunywa lita 1 ya maji baada ya zoezi hili ⚠️</marquee>
+        </div>
+
+        <div style="padding: 35px;">
+            <h1 style="text-align: center; color: var(--fire-orange); margin-bottom: 10px;">V8 PRO SCANNER</h1>
+            <p style="text-align: center; color: #aaa; margin-bottom: 25px;">Digital Body-Analysis & Cell Diagnostic System</p>
+
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="p-name" placeholder="Jina Kamili">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="number" id="p-age" placeholder="Umri (Miaka)">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-venus-mars"></i>
+                <select id="p-gender">
+                    <option value="male">Mwanaume</option>
+                    <option value="female">Mwanamke</option>
+                </select>
+            </div>
+
+            <button class="btn-fire" onclick="startProcess()">ANZIA UCHUNGUZI (FIRE-SCAN)</button>
+        </div>
+    </div>
+
+    <div class="card" id="scanner-interface" style="display:none; padding: 30px; text-align: center;">
+        <h2 style="color: var(--fire-orange); margin-bottom: 15px;">UCHAMBUZI WA SELI...</h2>
+        <div id="camera-zone">
+            <div class="laser-line"></div>
+            <video id="webcam" autoplay playsinline muted></video>
+        </div>
+        <div style="margin-top: 25px;">
+            <div style="width: 100%; height: 10px; background: #333; border-radius: 10px; overflow: hidden;">
+                <div id="progress-fill" style="width: 0%; height: 100%; background: var(--fire-orange); transition: 0.1s;"></div>
+            </div>
+            <p id="progress-text" style="margin-top: 10px; font-weight: bold; color: #0f0;">ANALYZING: 0%</p>
+        </div>
+    </div>
+</div>
+
+<div id="report-paper">
+    <div class="report-header">
+        <h1 style="font-size: 32px; color: #0a3d62; margin: 0;">DR. WILLIAM CLINIC & DIAGNOSTICS</h1>
+        <p style="font-size: 16px; font-weight: bold;">Bio-Magnetic Resonance Expert Report (V8.0 PRO)</p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        <span>PATIENT: <span id="r-name"></span></span>
+        <span>AGE: <span id="r-age"></span></span>
+        <span>ID: <span id="r-id"></span></span>
+    </div>
+
+    <div class="diagnosis-box">
+        <h3 style="color: var(--fire-orange); margin-bottom: 10px;">A. MATOKEO KULINGANA NA HERUFI YA JINA</h3>
+        <div id="letter-report" style="line-height: 1.6; text-align: justify;"></div>
+    </div>
+
+    <div class="diagnosis-box">
+        <h3 style="color: var(--fire-orange); margin-bottom: 10px;">B. HALI YA VIUNGO VYA NDANI (INTERNAL SCAN)</h3>
+        <div id="age-report" style="line-height: 1.6; text-align: justify;"></div>
+    </div>
+
+    <div class="alert-box">
+        <h3 style="color: var(--blood-red); margin-top: 0;">C. DAWA NA USHAURI WA HARAKA</h3>
+        <p><strong>Code ya Matibabu:</strong> <span id="med-code" style="font-size: 22px; color: var(--blood-red); font-weight: bold;"></span></p>
+        <p><strong>Ushauri:</strong> Lazima utumie dawa ya <b>ZETRONE</b> ndani ya saa 24 kutoa sumu (detox) zilizogundulika kwenye mfumo wa damu. Epuka sukari, chumvi nyingi, na hakikisha unakunywa lita 3 za maji leo kusaidia figo.</p>
+    </div>
+
+    <div style="margin-top: 40px; text-align: center;">
+        <button class="btn-fire" onclick="window.print()" style="width: 250px;">PRINT / SAVE PDF</button>
+        <p style="font-size: 11px; color: #888; margin-top: 15px;">Hati hii imetolewa kielektroniki na ni halali kwa saa 24 pekee.</p>
+    </div>
+</div>
+
+<script>
+    // Lock logic
+    if (localStorage.getItem('v8_expert_lock')) {
+        document.getElementById('lock-screen').style.display = 'flex';
+        document.querySelector('.content-wrapper').style.display = 'none';
+    }
+
+    async function startProcess() {
+        const name = document.getElementById('p-name').value;
+        const age = document.getElementById('p-age').value;
+
+        if (!name || !age) {
+            alert("Tafadhali jaza Jina na Umri kwanza!");
+            return;
+        }
+
+        document.getElementById('main-ui').style.display = 'none';
+        document.getElementById('scanner-interface').style.display = 'block';
+        document.getElementById('camera-zone').style.display = 'block';
+
+        // Camera init
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            document.getElementById('webcam').srcObject = stream;
+        } catch (e) { console.log("Thermal sensors active."); }
+
+        let progress = 0;
+        let interval = setInterval(() => {
+            progress += 1;
+            document.getElementById('progress-fill').style.width = progress + "%";
+            document.getElementById('progress-text').innerText = `ANALYZING CELLULAR DATA: ${progress}%`;
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                generateReport(name, age);
+            }
+        }, 120);
+    }
+
+    function generateReport(name, age) {
+        localStorage.setItem('v8_expert_lock', 'true');
+        document.querySelector('.content-wrapper').style.display = 'none';
+        document.getElementById('report-paper').style.display = 'block';
+
+        document.getElementById('r-name').innerText = name.toUpperCase();
+        document.getElementById('r-age').innerText = age;
+        document.getElementById('r-id').innerText = "V8-" + Math.floor(100000 + Math.random() * 900000);
+
+        // 1. Letter Logic (A, B, C, etc.)
+        const firstLetter = name.charAt(0).toUpperCase();
+        let letterData = "";
+        const letterMap = {
+            'A': "Watu wa herufi 'A' wana bidii lakini wanakabiliwa na shinikizo la damu (Hypertension) na maumivu ya kifua kutokana na msongo wa mawazo.",
+            'B': "Herufi 'B' inaonyesha hatari ya mzio (Allergies) na matatizo ya mfumo wa upumuaji hasa nyakati za usiku.",
+            'C': "Watu wa herufi 'C' mara nyingi hukabiliwa na changamoto za mfumo wa mmeng'enyo na maumivu ya viungo (Joint pains).",
+            'D': "Herufi 'D' inaashiria hatari ya uchovu wa akili (Brain fatigue) na upungufu wa nishati kwenye seli za mwili.",
+            'E': "Wenye herufi 'E' wapo kwenye hatari ya matatizo ya ngozi na mivurugiko ya homoni (Hormonal imbalance)."
+        };
+        letterData = letterMap[firstLetter] || "Mfumo umetambua mivumo ya nishati inayoelekea kwenye uchovu sugu na hatari ya shinikizo la ndani (Internal Pressure Stress).";
+        document.getElementById('letter-report').innerHTML = `<p>${letterData} Mashine imebaini dalili za mwanzo za kuziba kwa vishipa vidogo (Vascular Narrowing).</p>`;
+
+        // 2. Age Logic (Based on Umri.txt)
+        let ageData = "";
+        const nAge = parseInt(age);
+        if (nAge <= 14) {
+            ageData = `
+                <p><b>Mzunguko wa Damu:</b> Kwa mtoto wa miaka ${nAge}, moyo unaonyesha kasi kubwa (Tachycardia markers) hasa usiku.</p>
+                <p><b>Figo:</b> Eneo la kiuno upande wa kushoto linaonyesha 'Renal Strain'. Hii inatokana na mwili kukosa maji ya kutosha ya kusafishia sumu.</p>
+                <p><b>Mishipa ya Macho:</b> Imeonekana kusinyaa kwa mishipa midogo inayopeleka damu kwenye lenzi, jambo linaloweza kuathiri uoni mbeleni.</p>
+            `;
+        } else if (nAge >= 60) {
+            ageData = `
+                <p><b>Mzunguko wa Damu:</b> Kasi isiyo ya kawaida kwa umri wako (Geriatric Hemodynamic Stress). Moyo unalemewa na kuta za mishipa zimepata shinikizo kubwa.</p>
+                <p><b>Mchafuko wa Damu:</b> Damu imejaa sumu za muda mrefu (Chronic Systemic Toxins). Kiwango cha maji ni kidogo mno, jambo linalofanya damu kuwa nzito.</p>
+                <p><b>Mishipa ya Miguu:</b> Kipimo kimebaini mishipa ya miguu inakandamizwa, hali inayoleta ganzi na maumivu ya viuno.</p>
+            `;
+        } else {
+            ageData = `
+                <p><b>Hemodynamics:</b> Kuta za mishipa zimeanza kupoteza uimara (Vascular Stiffness). Hii huleta hatari ya presha ya ghafla.</p>
+                <p><b>Toxins:</b> Mfumo wa utumbo umejaa sumu (Toxicity level: High) zinazozuia ufyonzaji wa virutubisho muhimu.</p>
+                <p><b>Insomnia:</b> Joto la mwili liko juu, kuashiria kuwa hupati muda mzuri wa kulala na una kiwango kikubwa cha hasira au msongo.</p>
+            `;
+        }
+        document.getElementById('age-report').innerHTML = ageData;
+
+        // 3. Medicine Codes
+        const codes = [`${Math.floor(Math.random()*50)}W`, `${Math.floor(Math.random()*50)}X`, "V8-DETOX"];
+        document.getElementById('med-code').innerText = `[${codes.join(", ")}]`;
+    }
+</script>
+
+</body>
+</html>
